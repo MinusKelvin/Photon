@@ -1,0 +1,24 @@
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.BorderPane?>
+<?import minusk.photon.jfx.Display?>
+<BorderPane fx:controller="minusk.photon.control.MainController" xmlns:fx="http://javafx.com/fxml">
+	<top>
+		<MenuBar>
+			<Menu mnemonicParsing="true" text="_File">
+				<MenuItem mnemonicParsing="true" text="_New" accelerator="Shortcut+N" onAction="#newFile"/>
+				<MenuItem mnemonicParsing="true" text="_Open..." accelerator="Shortcut+O" onAction="#open"/>
+				<MenuItem mnemonicParsing="true" text="_Save" accelerator="Shortcut+S" onAction="#save"/>
+				<MenuItem mnemonicParsing="true" text="Save _As..." accelerator="Shortcut+Shift+S" onAction="#saveAs"/>
+				<SeparatorMenuItem/>
+				<MenuItem mnemonicParsing="true" text="_Quit" accelerator="Shortcut+Q" onAction="#quit"/>
+			</Menu>
+			<Menu mnemonicParsing="true" text="_Edit">
+				<MenuItem mnemonicParsing="true" text="_Undo" accelerator="Shortcut+Z"/>
+				<MenuItem mnemonicParsing="true" text="_Redo" accelerator="Shortcut+Y"/>
+			</Menu>
+		</MenuBar>
+	</top>
+	<center>
+		<Display id="display"/>
+	</center>
+</BorderPane>

@@ -1,0 +1,2 @@
+output.a = source.a + destination.a * (1.0 - source.a);
+output.rgb = (source.rgb * source.a + destination.rgb * destination.a * (1.0 - source.a)) / output.a;

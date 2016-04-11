@@ -1,0 +1,51 @@
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import minusk.photon.jfx.ColorDisplay?>
+<StackPane fx:controller="minusk.photon.control.ColorPicker" xmlns:fx="http://javafx.com/fxml">
+	<padding>
+		<Insets top="8" bottom="8" left="8" right="8"/>
+	</padding>
+	<HBox spacing="4">
+		<VBox>
+			<ColorDisplay id="colorDisplay"/>
+		</VBox>
+		<GridPane vgap="2" hgap="5">
+			<HBox GridPane.columnIndex="0" GridPane.columnSpan="3" GridPane.rowIndex="0" alignment="CENTER_LEFT" spacing="4">
+				<Label text="RGB"/>
+				<Separator style="-fx-background: lightgray;" HBox.hgrow="ALWAYS"/>
+			</HBox>
+			<Label text="R:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+			<Label text="G:" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+			<Label text="B:" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
+			<HBox GridPane.columnIndex="0" GridPane.columnSpan="3" GridPane.rowIndex="4" alignment="CENTER_LEFT" spacing="4">
+				<Label text="Transparency"/>
+				<Separator style="-fx-background: lightgray;" HBox.hgrow="ALWAYS"/>
+			</HBox>
+			<Slider id="RSlider" min="0" max="255" snapToTicks="true" showTickMarks="true" majorTickUnit="1" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+			<Slider id="GSlider" min="0" max="255" snapToTicks="true" showTickMarks="true" majorTickUnit="1" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+			<Slider id="BSlider" min="0" max="255" snapToTicks="true" showTickMarks="true" majorTickUnit="1" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+			<Slider id="ASlider" min="0" max="255" snapToTicks="true" showTickMarks="true" majorTickUnit="1" GridPane.columnIndex="1" GridPane.rowIndex="5"/>
+			<Spinner id="RSpinner" editable="true" maxWidth="75" GridPane.columnIndex="2" GridPane.rowIndex="1">
+				<valueFactory>
+					<SpinnerValueFactory.IntegerSpinnerValueFactory min="0" max="255"/>
+				</valueFactory>
+			</Spinner>
+			<Spinner id="GSpinner" editable="true" maxWidth="75" GridPane.columnIndex="2" GridPane.rowIndex="2">
+				<valueFactory>
+					<SpinnerValueFactory.IntegerSpinnerValueFactory min="0" max="255"/>
+				</valueFactory>
+			</Spinner>
+			<Spinner id="BSpinner" editable="true" maxWidth="75" GridPane.columnIndex="2" GridPane.rowIndex="3">
+				<valueFactory>
+					<SpinnerValueFactory.IntegerSpinnerValueFactory min="0" max="255"/>
+				</valueFactory>
+			</Spinner>
+			<Spinner id="ASpinner" editable="true" maxWidth="75" GridPane.columnIndex="2" GridPane.rowIndex="5">
+				<valueFactory>
+					<SpinnerValueFactory.IntegerSpinnerValueFactory min="0" max="255"/>
+				</valueFactory>
+			</Spinner>
+		</GridPane>
+	</HBox>
+</StackPane>
