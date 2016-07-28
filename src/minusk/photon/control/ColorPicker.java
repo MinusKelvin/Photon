@@ -34,36 +34,44 @@ public class ColorPicker {
 		}));
 		
 		Slider redSlider = (Slider) root.lookup("#RSlider");
-		currentEditColor.addListener((observable, oldValue, newValue) -> redSlider.setValue(newValue.intValue() & 0xff));
-		redSlider.valueProperty().addListener((observable, oldValue, newValue) -> currentEditColor.set((currentEditColor.get() & ~0xff) | newValue.intValue()));
+		currentEditColor.addListener((observable, oldValue, newValue) -> redSlider.setValue(newValue.intValue() >> 16 & 0xff));
+		redSlider.valueProperty().addListener((observable, oldValue, newValue) ->
+				currentEditColor.set((currentEditColor.get() & ~0xff0000) | newValue.intValue() << 16));
 		
 		Slider greenSlider = (Slider) root.lookup("#GSlider");
 		currentEditColor.addListener((observable, oldValue, newValue) -> greenSlider.setValue(newValue.intValue() >> 8 & 0xff));
-		greenSlider.valueProperty().addListener((observable, oldValue, newValue) -> currentEditColor.set((currentEditColor.get() & ~0xff00) | newValue.intValue() << 8));
+		greenSlider.valueProperty().addListener((observable, oldValue, newValue) ->
+				currentEditColor.set((currentEditColor.get() & ~0xff00) | newValue.intValue() << 8));
 		
 		Slider blueSlider = (Slider) root.lookup("#BSlider");
-		currentEditColor.addListener((observable, oldValue, newValue) -> blueSlider.setValue(newValue.intValue() >> 16 & 0xff));
-		blueSlider.valueProperty().addListener((observable, oldValue, newValue) -> currentEditColor.set((currentEditColor.get() & ~0xff0000) | newValue.intValue() << 16));
+		currentEditColor.addListener((observable, oldValue, newValue) -> blueSlider.setValue(newValue.intValue() & 0xff));
+		blueSlider.valueProperty().addListener((observable, oldValue, newValue) ->
+				currentEditColor.set((currentEditColor.get() & ~0xff) | newValue.intValue()));
 		
 		Slider alphaSlider = (Slider) root.lookup("#ASlider");
 		currentEditColor.addListener((observable, oldValue, newValue) -> alphaSlider.setValue(newValue.intValue() >> 24 & 0xff));
-		alphaSlider.valueProperty().addListener((observable, oldValue, newValue) -> currentEditColor.set((currentEditColor.get() & ~0xff000000) | newValue.intValue() << 24));
+		alphaSlider.valueProperty().addListener((observable, oldValue, newValue) ->
+				currentEditColor.set((currentEditColor.get() & ~0xff000000) | newValue.intValue() << 24));
 		
 		Spinner<Integer> redSpinner = (Spinner) root.lookup("#RSpinner");
-		currentEditColor.addListener((observable, oldValue, newValue) -> redSpinner.getValueFactory().setValue(newValue.intValue() & 0xff));
-		redSpinner.valueProperty().addListener((observable, oldValue, newValue) -> currentEditColor.set((currentEditColor.get() & ~0xff) | newValue));
+		currentEditColor.addListener((observable, oldValue, newValue) -> redSpinner.getValueFactory().setValue(newValue.intValue() >> 16 & 0xff));
+		redSpinner.valueProperty().addListener((observable, oldValue, newValue) ->
+				currentEditColor.set((currentEditColor.get() & ~0xff0000) | newValue << 16));
 		
 		Spinner<Integer> greenSpinner = (Spinner) root.lookup("#GSpinner");
 		currentEditColor.addListener((observable, oldValue, newValue) -> greenSpinner.getValueFactory().setValue(newValue.intValue() >> 8 & 0xff));
-		greenSpinner.valueProperty().addListener((observable, oldValue, newValue) -> currentEditColor.set((currentEditColor.get() & ~0xff00) | newValue << 8));
+		greenSpinner.valueProperty().addListener((observable, oldValue, newValue) ->
+				currentEditColor.set((currentEditColor.get() & ~0xff00) | newValue << 8));
 		
 		Spinner<Integer> blueSpinner = (Spinner) root.lookup("#BSpinner");
-		currentEditColor.addListener((observable, oldValue, newValue) -> blueSpinner.getValueFactory().setValue(newValue.intValue() >> 16 & 0xff));
-		blueSpinner.valueProperty().addListener((observable, oldValue, newValue) -> currentEditColor.set((currentEditColor.get() & ~0xff0000) | newValue << 16));
+		currentEditColor.addListener((observable, oldValue, newValue) -> blueSpinner.getValueFactory().setValue(newValue.intValue() & 0xff));
+		blueSpinner.valueProperty().addListener((observable, oldValue, newValue) ->
+				currentEditColor.set((currentEditColor.get() & ~0xff) | newValue));
 		
 		Spinner<Integer> alphaSpinner = (Spinner) root.lookup("#ASpinner");
 		currentEditColor.addListener((observable, oldValue, newValue) -> alphaSpinner.getValueFactory().setValue(newValue.intValue() >> 24 & 0xff));
-		alphaSpinner.valueProperty().addListener((observable, oldValue, newValue) -> currentEditColor.set((currentEditColor.get() & ~0xff000000) | newValue << 24));
+		alphaSpinner.valueProperty().addListener((observable, oldValue, newValue) ->
+				currentEditColor.set((currentEditColor.get() & ~0xff000000) | newValue << 24));
 		
 		currentEditColor.bindBidirectional(primaryColor);
 		primaryColor.setValue(0xff000000);

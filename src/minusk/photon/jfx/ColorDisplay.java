@@ -105,7 +105,7 @@ public class ColorDisplay extends Region {
 		@Override
 		public Paint getValue() {
 			int color = observee.get();
-			Color end = new Color(extract(color,0),extract(color,8),extract(color,16),extract(color,24));
+			Color end = new Color(extract(color,16),extract(color,8),extract(color,0),extract(color,24));
 			LinearGradient gradient = new LinearGradient(0, 0, 0, 1, true, CycleMethod.NO_CYCLE,
 					new Stop(0.25, end), new Stop(1, new Color(end.getRed(),end.getGreen(),end.getBlue(),1)));
 			return gradient;

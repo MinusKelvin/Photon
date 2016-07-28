@@ -8,12 +8,18 @@ import javafx.scene.image.PixelFormat;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseButton;
 import javafx.stage.Stage;
+import minusk.photon.file.ImageLoader;
+import minusk.photon.file.ImageSaver;
 import minusk.photon.image.BlendMode;
 import minusk.photon.image.Document;
 import minusk.photon.jfx.Display;
 import org.lwjgl.opengl.GL;
 
+import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import java.nio.IntBuffer;
+import java.util.HashSet;
+import java.util.Set;
 
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
@@ -39,17 +45,48 @@ public class MainController {
 	
 	@FXML
 	private void open(ActionEvent event) {
-		System.out.println("open");
+		JFileChooser chooser = new JFileChooser();
+		chooser.setFileFilter(new FileNameExtensionFilter("Supported image formats",getSaveLoadFormats()));
+//		chooser.addChoosableFileFilter(new FileNameExtensionFilter("Importable image formats",getImportableFormats()));
+		int result = chooser.showOpenDialog(null);
+		if (result == JFileChooser.APPROVE_OPTION) {
+			Document doc = ImageLoader.loadImage(chooser.getSelectedFile());
+			if (doc != null) {
+				currentDoc = doc;
+				stage.setTitle("Photon - "+currentDoc.file.getName());
+				draw();
+			}
+		}
+	}
+	
+	private String[] getSaveLoadFormats() {
+		Set<String> loadExtensions = ImageLoader.getLoadableFormats();
+		Set<String> saveExtensions = ImageSaver.getSaveableFormats();
+		Set<String> set = new HashSet<>(loadExtensions);
+//		set.retainAll(saveExtensions);
+		return set.toArray(new String[set.size()]);
 	}
 	
 	@FXML
 	private void save(ActionEvent event) {
-		System.out.println("save");
+		if (currentDoc.file == null)
+			saveAs(event);
+		else {
+			ImageSaver.saveImage(currentDoc, currentDoc.file);
+		}
 	}
 	
 	@FXML
 	private void saveAs(ActionEvent event) {
-		System.out.println("save as");
+		JFileChooser chooser = new JFileChooser();
+		chooser.setFileFilter(new FileNameExtensionFilter("Supported image formats",getSaveLoadFormats()));
+//		chooser.addChoosableFileFilter(new FileNameExtensionFilter("Exportable image formats",getExportableFormats()));
+		int result = chooser.showSaveDialog(null);
+		if (result == JFileChooser.APPROVE_OPTION) {
+			currentDoc.file = chooser.getSelectedFile();
+			stage.setTitle("Photon - "+currentDoc.file.getName());
+			save(event);
+		}
 	}
 	
 	@FXML
@@ -57,6 +94,20 @@ public class MainController {
 		glfwTerminate();
 		
 		stage.close();
+	}
+	
+	private Stage colorPicker;
+	
+	@FXML
+	public void colorPicker(ActionEvent event) {
+		if (colorPicker.isShowing())
+			colorPicker.close();
+		else
+			colorPicker.show();
+	}
+	
+	public void setColorPicker(Stage colorPicker) {
+		this.colorPicker = colorPicker;
 	}
 	
 	private void draw() {
@@ -132,6 +183,8 @@ public class MainController {
 		
 		Document.initialize();
 		BlendMode.initialize();
+		ImageLoader.initialize();
+		ImageSaver.initialize();
 		
 		currentDoc = new Document(800,600);
 	}

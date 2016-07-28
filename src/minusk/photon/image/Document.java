@@ -4,17 +4,17 @@ import minusk.photon.control.MainController;
 import minusk.photon.tools.Pencil;
 import minusk.photon.tools.Tool;
 
+import java.io.File;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
 
 import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL12.GL_CLAMP_TO_EDGE;
-import static org.lwjgl.opengl.GL12.GL_TEXTURE_MAX_LEVEL;
+import static org.lwjgl.opengl.GL12.*;
 import static org.lwjgl.opengl.GL15.*;
 import static org.lwjgl.opengl.GL20.*;
 import static org.lwjgl.opengl.GL30.*;
-import static org.lwjgl.opengl.GL32.*;
+import static org.lwjgl.opengl.GL32.glFramebufferTexture;
 import static org.lwjgl.system.jemalloc.JEmalloc.*;
 
 /**
@@ -33,6 +33,7 @@ public class Document {
 	private ArrayList<Layer> layers = new ArrayList<>();
 	private ByteBuffer change, changeStencil;
 	private BlendMode changeBlendMode;
+	public File file = null;
 	private int changing = 0;
 	public Tool currentTool = new Pencil();
 	
@@ -52,12 +53,20 @@ public class Document {
 		return height;
 	}
 	
+	public int getLayerCount() {
+		return layers.size();
+	}
+	
 	public Layer getLayer(int i) {
 		return layers.get(i);
 	}
 	
 	public Layer getWorkingLayer() {
 		return layers.get(currentLayer);
+	}
+	
+	public void addLayer(int index) {
+		layers.add(index, new Layer(this));
 	}
 	
 	/**
@@ -117,14 +126,14 @@ public class Document {
 			throw new IllegalStateException("can't finalize change when not changing");
 		
 		glBindTexture(GL_TEXTURE_2D, changetex);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, change);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_BGRA, GL_UNSIGNED_BYTE, change);
 		glBindTexture(GL_TEXTURE_2D, tex1);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, getWorkingLayer().colorData);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_BGRA, GL_UNSIGNED_BYTE, getWorkingLayer().colorData);
 		glBindTexture(GL_TEXTURE_2D, tex2);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_BGRA, GL_UNSIGNED_BYTE, 0);
 		changeBlendMode.blend(width, height, changetex, tex1, tex2);
 		glBindTexture(GL_TEXTURE_2D, tex2);
-		glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE, getWorkingLayer().colorData);
+		glGetTexImage(GL_TEXTURE_2D, 0, GL_BGRA, GL_UNSIGNED_BYTE, getWorkingLayer().colorData);
 		
 		je_free(change);
 		changing = 0;
@@ -140,21 +149,21 @@ public class Document {
 			
 			if (usingDisplay) {
 				glBindTexture(GL_TEXTURE_2D, displaytex);
-				glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, layers.get(0).colorData);
+				glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_BGRA, GL_UNSIGNED_BYTE, layers.get(0).colorData);
 				glBindTexture(GL_TEXTURE_2D, tex2);
-				glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+				glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_BGRA, GL_UNSIGNED_BYTE, 0);
 			} else {
 				glBindTexture(GL_TEXTURE_2D, displaytex);
-				glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+				glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_BGRA, GL_UNSIGNED_BYTE, 0);
 				glBindTexture(GL_TEXTURE_2D, tex2);
-				glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, layers.get(0).colorData);
+				glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_BGRA, GL_UNSIGNED_BYTE, layers.get(0).colorData);
 			}
 			glBindTexture(GL_TEXTURE_2D, tex1);
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_BGRA, GL_UNSIGNED_BYTE, 0);
 			
 			if (changing != 0) {
 				glBindTexture(GL_TEXTURE_2D, changetex);
-				glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, change);
+				glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_BGRA, GL_UNSIGNED_BYTE, change);
 				if (currentLayer == 0) {
 					if (usingDisplay)
 						changeBlendMode.blend(width, height, changetex, displaytex, tex2);
@@ -170,14 +179,14 @@ public class Document {
 						glBindTexture(GL_TEXTURE_2D, tex2);
 					else
 						glBindTexture(GL_TEXTURE_2D, displaytex);
-					glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, layers.get(i).colorData);
+					glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, GL_BGRA, GL_UNSIGNED_BYTE, layers.get(i).colorData);
 					if (usingDisplay)
 						changeBlendMode.blend(width, height, changetex, tex2, tex1);
 					else
 						changeBlendMode.blend(width, height, changetex, displaytex, tex1);
 				} else {
 					glBindTexture(GL_TEXTURE_2D, tex1);
-					glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, layers.get(i).colorData);
+					glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, GL_BGRA, GL_UNSIGNED_BYTE, layers.get(i).colorData);
 				}
 				
 				if (usingDisplay)
@@ -196,7 +205,7 @@ public class Document {
 		
 		glBindTexture(GL_TEXTURE_2D, finalTex);
 		if (documentAreaWidth != lastWidth || documentAreaHeight != lastHeight)
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, documentAreaWidth, documentAreaHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, documentAreaWidth, documentAreaHeight, 0, GL_BGRA, GL_UNSIGNED_BYTE, 0);
 		lastHeight = documentAreaHeight;
 		lastWidth = documentAreaWidth;
 		glBindFramebuffer(GL_FRAMEBUFFER, fbo);

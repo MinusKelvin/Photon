@@ -8,7 +8,7 @@ import static org.lwjgl.system.jemalloc.JEmalloc.*;
  * Created by MinusKelvin on 17/09/15.
  */
 public class Layer {
-	final ByteBuffer colorData;
+	public final ByteBuffer colorData;
 	
 	public final Document parent;
 	
